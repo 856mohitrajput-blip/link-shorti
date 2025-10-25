@@ -54,38 +54,75 @@ export async function POST(request) {
 
       // Send OTP email
       const html = `
-        <div style="max-width: 700px; margin: auto; font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <h1>LinkShorti</h1>
-          </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Verify Your Email - LinkShorti</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+          <div style="max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            
+            <!-- Header -->
+            <div style="background-color: #ffffff; padding: 30px 20px; text-align: center; border-bottom: 1px solid #e5e5e5;">
+              <h1 style="color: #333333; font-size: 24px; font-weight: 600; margin: 0;">LinkShorti</h1>
+            </div>
 
-          <p style="font-size: 16px; color: #374151;">Hi <strong>${name}</strong>,</p>
+            <!-- Content -->
+            <div style="padding: 30px 20px;">
+              <h2 style="color: #333333; font-size: 18px; font-weight: 600; margin: 0 0 15px 0;">Hi ${name},</h2>
+              
+              <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 0 0 25px 0;">
+                Welcome to LinkShorti! To complete your account setup, please verify your email address using the verification code below.
+              </p>
 
-          <p style="font-size: 16px; color: #374151; line-height: 1.6;">
-            Welcome to LinkShorti! To complete your account setup, please verify your email address using the code below.
-          </p>
+              <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 20px; text-align: center; margin: 25px 0;">
+                <p style="color: #6c757d; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0;">Verification Code</p>
+                <div style="font-family: 'Courier New', monospace; font-size: 24px; font-weight: bold; color: #333333; letter-spacing: 4px;">${otpCode}</div>
+              </div>
 
-          <div style="margin: 20px 0; text-align: center;">
-            <div style="display: inline-block; padding: 20px 30px; background-color: #f3f4f6; border: 2px dashed #2563eb; border-radius: 12px; font-family: 'Courier New', monospace;">
-              <p style="margin: 0; font-size: 14px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
-              <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold; color: #2563eb; letter-spacing: 4px;">${otpCode}</p>
+              <p style="color: #666666; font-size: 13px; line-height: 1.5; margin: 25px 0;">
+                This verification code will expire in <strong>10 minutes</strong>. If you didn't create this account, you can safely ignore this email.
+              </p>
+
+              <div style="background-color: #f8f9fa; border-left: 3px solid #007bff; padding: 15px; margin: 25px 0;">
+                <p style="color: #495057; font-size: 13px; margin: 0; line-height: 1.4;">
+                  <strong>Need help?</strong> If you're having trouble with verification, please contact our support team.
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e5e5e5;">
+              <p style="color: #6c757d; font-size: 12px; margin: 0 0 10px 0;">
+                <a href="mailto:support@linkshorti.com" style="color: #007bff; text-decoration: none;">support@linkshorti.com</a>
+              </p>
+              
+              <p style="color: #adb5bd; font-size: 11px; margin: 0; line-height: 1.4;">
+                © ${new Date().getFullYear()} LinkShorti. All rights reserved.<br>
+                This email was sent to ${email}
+              </p>
             </div>
           </div>
 
-          <p style="font-size: 15px; color: #6b7280; line-height: 1.5;">
-            This verification code will expire in <strong>10 minutes</strong>. If you didn't create this account, you can safely ignore this email.
-          </p>
-
-          <hr style="margin: 30px 0; border: none; border-top: 1px solid #e5e7eb;" />
-
-          <p style="font-size: 13px; text-align: center;">
-            Need help? Contact us at <a href="mailto:support@linkshorti.com" style="color: #2563eb; text-decoration: none;">support@linkshorti.com</a>
-          </p>
-
-          <p style="font-size: 13px; text-align: center; margin-top: 3px;">
-            &copy; ${new Date().getFullYear()} Link Shorti. All rights reserved.
-          </p>
-        </div>
+          <!-- Mobile Responsive -->
+          <style>
+            @media only screen and (max-width: 600px) {
+              .email-container {
+                margin: 10px !important;
+              }
+              .email-content {
+                padding: 20px 15px !important;
+              }
+              .verification-code {
+                font-size: 20px !important;
+                letter-spacing: 2px !important;
+              }
+            }
+          </style>
+        </body>
+        </html>
       `;
 
       const emailResult = await sendEmail({ 
@@ -95,13 +132,14 @@ export async function POST(request) {
       });
 
       if (!emailResult.success) {
+        console.error('Email sending failed during signup:', emailResult.error);
         // If email fails, delete the user to prevent orphaned accounts
         await User.findOneAndDelete({ email });
         await Statistics.findOneAndDelete({ userEmail: email });
         await Withdrawal.findOneAndDelete({ userEmail: email });
         
         return NextResponse.json(
-          { success: false, message: "Failed to send verification email. Please try again." },
+          { success: false, message: `Failed to send verification email: ${emailResult.error}` },
           { status: 500 }
         );
       }
@@ -165,28 +203,75 @@ export async function POST(request) {
 
       // Send new OTP email
       const html = `
-        <div style="max-width: 700px; margin: auto; font-family: 'Segoe UI', Roboto, sans-serif; background-color: #f9fafb; padding: 30px; border-radius: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);">
-          <div style="text-align: center; margin-bottom: 30px;">
-            <h1>LinkShorti</h1>
-          </div>
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <meta charset="utf-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>New Verification Code - LinkShorti</title>
+        </head>
+        <body style="margin: 0; padding: 0; background-color: #f5f5f5; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;">
+          <div style="max-width: 600px; margin: 20px auto; background: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+            
+            <!-- Header -->
+            <div style="background-color: #ffffff; padding: 30px 20px; text-align: center; border-bottom: 1px solid #e5e5e5;">
+              <h1 style="color: #333333; font-size: 24px; font-weight: 600; margin: 0;">LinkShorti</h1>
+            </div>
 
-          <p style="font-size: 16px; color: #374151;">Hi <strong>${user.fullName}</strong>,</p>
+            <!-- Content -->
+            <div style="padding: 30px 20px;">
+              <h2 style="color: #333333; font-size: 18px; font-weight: 600; margin: 0 0 15px 0;">Hi ${user.fullName},</h2>
+              
+              <p style="color: #666666; font-size: 14px; line-height: 1.6; margin: 0 0 25px 0;">
+                Here's your new verification code to complete your account setup.
+              </p>
 
-          <p style="font-size: 16px; color: #374151; line-height: 1.6;">
-            Here's your new verification code to complete your account setup.
-          </p>
+              <div style="background-color: #f8f9fa; border: 1px solid #e9ecef; border-radius: 6px; padding: 20px; text-align: center; margin: 25px 0;">
+                <p style="color: #6c757d; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; margin: 0 0 10px 0;">New Verification Code</p>
+                <div style="font-family: 'Courier New', monospace; font-size: 24px; font-weight: bold; color: #333333; letter-spacing: 4px;">${otpCode}</div>
+              </div>
 
-          <div style="margin: 20px 0; text-align: center;">
-            <div style="display: inline-block; padding: 20px 30px; background-color: #f3f4f6; border: 2px dashed #2563eb; border-radius: 12px; font-family: 'Courier New', monospace;">
-              <p style="margin: 0; font-size: 14px; color: #6b7280; text-transform: uppercase; letter-spacing: 1px;">Your Verification Code</p>
-              <p style="margin: 10px 0 0 0; font-size: 32px; font-weight: bold; color: #2563eb; letter-spacing: 4px;">${otpCode}</p>
+              <p style="color: #666666; font-size: 13px; line-height: 1.5; margin: 25px 0;">
+                This verification code will expire in <strong>10 minutes</strong>.
+              </p>
+
+              <div style="background-color: #f8f9fa; border-left: 3px solid #28a745; padding: 15px; margin: 25px 0;">
+                <p style="color: #495057; font-size: 13px; margin: 0; line-height: 1.4;">
+                  <strong>Fresh code generated!</strong> Use this new code to verify your email address.
+                </p>
+              </div>
+            </div>
+
+            <!-- Footer -->
+            <div style="background-color: #f8f9fa; padding: 20px; text-align: center; border-top: 1px solid #e5e5e5;">
+              <p style="color: #6c757d; font-size: 12px; margin: 0 0 10px 0;">
+                <a href="mailto:support@linkshorti.com" style="color: #007bff; text-decoration: none;">support@linkshorti.com</a>
+              </p>
+              
+              <p style="color: #adb5bd; font-size: 11px; margin: 0; line-height: 1.4;">
+                © ${new Date().getFullYear()} LinkShorti. All rights reserved.<br>
+                This email was sent to ${email}
+              </p>
             </div>
           </div>
 
-          <p style="font-size: 15px; color: #6b7280; line-height: 1.5;">
-            This verification code will expire in <strong>10 minutes</strong>.
-          </p>
-        </div>
+          <!-- Mobile Responsive -->
+          <style>
+            @media only screen and (max-width: 600px) {
+              .email-container {
+                margin: 10px !important;
+              }
+              .email-content {
+                padding: 20px 15px !important;
+              }
+              .verification-code {
+                font-size: 20px !important;
+                letter-spacing: 2px !important;
+              }
+            }
+          </style>
+        </body>
+        </html>
       `;
 
       const emailResult = await sendEmail({ 
@@ -196,8 +281,9 @@ export async function POST(request) {
       });
 
       if (!emailResult.success) {
+        console.error('Email sending failed during resend:', emailResult.error);
         return NextResponse.json(
-          { success: false, message: "Failed to send verification email" },
+          { success: false, message: `Failed to send verification email: ${emailResult.error}` },
           { status: 500 }
         );
       }

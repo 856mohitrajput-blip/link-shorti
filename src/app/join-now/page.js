@@ -12,29 +12,22 @@ export default function JoinUsPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-gray-100">
-      <div className="relative w-full lg:max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden lg:h-[520px] min-h-[640px] sm:min-h-[600px] lg:min-h-0 flex flex-col">
+      <div className="relative w-full lg:max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden lg:h-[580px] min-h-[640px] sm:min-h-[600px] lg:min-h-0 flex flex-col">
 
         <div className="w-full py-4 text-center bg-gray-800 text-white flex items-center justify-center gap-3">
-          <Image 
-            src="/logo.jpg" 
-            alt="LinkShorti Logo" 
-            width={40} 
-            height={40} 
+          <Image
+            src="/logo.jpg"
+            alt="LinkShorti Logo"
+            width={40}
+            height={40}
             className="rounded-lg"
           />
           <span className="text-3xl font-extrabold">LinkShorti</span>
         </div>
 
-        <div className="flex-1 relative lg:flex lg:flex-row h-full">
-          <div
-            className={`
-              hidden lg:flex w-full lg:w-1/2 p-8 lg:p-12 text-white bg-gradient-to-br from-cyan-500 to-blue-600 flex-col justify-center items-center transition-all duration-700 ease-in-out h-full
-              ${isLogin
-                ? 'lg:translate-x-full'
-                : 'lg:translate-x-0'
-              }
-            `}
-          >
+        <div className="flex-1 lg:flex lg:flex-row h-full overflow-hidden">
+          {/* Left Panel - Welcome Message */}
+          <div className={`hidden lg:flex w-1/2 p-8 lg:p-12 text-white bg-gradient-to-br from-cyan-500 to-blue-600 flex-col justify-center items-center h-full ${!isLogin ? 'order-2' : 'order-1'}`}>
             <div className="text-center">
               <h2 className="text-3xl lg:text-4xl font-extrabold mb-4">
                 {isLogin ? 'Hello, Friend!' : 'Welcome Back!'}
@@ -53,20 +46,15 @@ export default function JoinUsPage() {
             </div>
           </div>
 
-          <div
-            className={`
-              absolute lg:relative w-full lg:w-1/2 flex flex-col items-center justify-center p-8 lg:p-12 bg-white transition-all duration-700 ease-in-out transform h-full overflow-y-auto
-              ${isLogin
-                ? 'lg:-translate-x-full'
-                : 'lg:translate-x-0'
-              }
-            `}
-          >
-            <div className="flex-1 flex items-center justify-center w-full">
-              {isLogin ? <LoginForm /> : <SignUpForm />}
+          {/* Right Panel - Form */}
+          <div className={`w-full lg:w-1/2 flex flex-col items-center justify-center bg-white h-full ${!isLogin ? 'order-1' : 'order-2'}`}>
+            <div className="flex-1 flex items-center justify-center w-full overflow-y-auto">
+              <div className="w-full max-w-sm px-8 py-4">
+                {isLogin ? <LoginForm /> : <SignUpForm />}
+              </div>
             </div>
 
-            <div className="w-full px-8 flex justify-center lg:hidden flex-shrink-0 pt-6 pb-2">
+            <div className="w-full px-8 flex justify-center lg:hidden flex-shrink-0 pt-6 pb-4">
               <button
                 onClick={() => setIsLogin(!isLogin)}
                 className="w-full max-w-sm font-bold py-3 px-8 rounded-full border-2 border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-white transition-all duration-300 cursor-pointer text-sm"
@@ -116,12 +104,12 @@ function LoginForm() {
   };
 
   return (
-    <div className="text-center w-full max-w-sm">
-      <h2 className="text-3xl font-bold text-gray-800 mb-4">Login</h2>
-      <div className="flex justify-center mb-6">
+    <div className="text-center w-full">
+      <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-3">Login</h2>
+      <div className="flex justify-center mb-4">
         <div className="w-16 h-1 bg-cyan-500"></div>
       </div>
-      <form className="space-y-6" onSubmit={handleSubmit}>
+      <form className="space-y-4" onSubmit={handleSubmit}>
         {error && <p className="text-red-500">{error}</p>}
         <div className="relative">
           <Mail className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
@@ -159,8 +147,8 @@ function LoginForm() {
           {loading ? 'Logging in...' : <><span>Login</span><ArrowRight className="ml-2 h-5 w-5" /></>}
         </button>
       </form>
-      
-      <div className="mt-6">
+
+      <div className="mt-4">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300" />
@@ -169,7 +157,7 @@ function LoginForm() {
             <span className="px-2 bg-white text-gray-500">Or continue with</span>
           </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-3">
           <GoogleSignInButton text="Sign in with Google" />
         </div>
       </div>
@@ -336,12 +324,12 @@ function SignUpForm() {
   }
 
   return (
-    <div className="text-center w-full max-w-sm">
-      <h2 className="text-3xl font-bold text-gray-800 mb-4">Create Account</h2>
-      <div className="flex justify-center mb-6">
+    <div className="text-center w-full">
+      <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-3">Create Account</h2>
+      <div className="flex justify-center mb-4">
         <div className="w-16 h-1 bg-cyan-500"></div>
       </div>
-      <form className="space-y-6" onSubmit={handleSignup}>
+      <form className="space-y-4" onSubmit={handleSignup}>
         {error && <p className="text-red-500 text-sm">{error}</p>}
         {success && <p className="text-green-500 text-sm">{success}</p>}
         <div className="relative">
@@ -391,8 +379,8 @@ function SignUpForm() {
           {loading ? 'Creating account...' : <><span>Create Account</span><ArrowRight className="ml-2 h-5 w-5" /></>}
         </button>
       </form>
-      
-      <div className="mt-6">
+
+      <div className="mt-4">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
             <div className="w-full border-t border-gray-300" />
@@ -401,7 +389,7 @@ function SignUpForm() {
             <span className="px-2 bg-white text-gray-500">Or continue with</span>
           </div>
         </div>
-        <div className="mt-4">
+        <div className="mt-3">
           <GoogleSignInButton text="Sign up with Google" />
         </div>
       </div>

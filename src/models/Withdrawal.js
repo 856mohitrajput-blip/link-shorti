@@ -19,7 +19,6 @@ const withdrawalHistorySchema = new mongoose.Schema({
     withdrawalId: {
         type: String,
         required: true,
-        unique: true,
     },
     date: {
         type: Date,

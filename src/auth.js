@@ -122,6 +122,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
      * JWT Callback
      * Add custom fields to JWT token
      * Fetches fresh user data on trigger
+     * 
+     * Note: Database access only happens in API routes, never in middleware
      */
     async jwt({ token, user, trigger, session }) {
       // On sign in, add user data to token
@@ -135,34 +137,18 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
         token.isBlocked = user.isBlocked || false;
       }
       
-      // On update trigger, fetch fresh user data from database
-      if (trigger === "update") {
-        // If session data is passed directly, use it
-        if (session?.fullName) {
+      // On update trigger, update token from session data
+      // Database fetch is handled separately in API routes, not here
+      // This prevents mongoose from being bundled in middleware
+      if (trigger === "update" && session) {
+        if (session.fullName) {
           token.fullName = session.fullName;
         }
-        
-        // Also fetch from database to ensure consistency
-        if (token.email) {
-          try {
-            // Dynamic imports are necessary here to avoid circular dependencies
-            const { default: connectDB } = await import('@/utils/dbConfig');
-            const { default: User } = await import('@/models/Users');
-            
-            await connectDB();
-            const dbUser = await User.findOne({ email: token.email }).lean();
-            
-            if (dbUser) {
-              token.fullName = dbUser.fullName;
-              token.isEmailVerified = dbUser.isEmailVerified;
-              token.image = dbUser.profileImage || token.image;
-              token.isAdmin = dbUser.isAdmin || false;
-              token.isBlocked = dbUser.isBlocked || false;
-            }
-          } catch (error) {
-            console.error('Error fetching user data:', error);
-            // Continue with existing token data on error
-          }
+        if (session.isEmailVerified !== undefined) {
+          token.isEmailVerified = session.isEmailVerified;
+        }
+        if (session.image) {
+          token.image = session.image;
         }
       }
       

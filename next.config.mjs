@@ -59,6 +59,14 @@ const nextConfig = {
   experimental: {
     serverComponentsExternalPackages: ['mongoose'],
   },
+  // Ensure middleware doesn't bundle mongoose
+  outputFileTracingExcludes: {
+    '*': [
+      'node_modules/mongoose/**/*',
+      'node_modules/mongodb/**/*',
+      'node_modules/bson/**/*',
+    ],
+  },
 };
 
 export default nextConfig;

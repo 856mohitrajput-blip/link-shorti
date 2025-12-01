@@ -13,7 +13,8 @@ import {
     YAxis,
     Tooltip,
     ResponsiveContainer,
-    Cell
+    Cell,
+    LabelList
 } from 'recharts';
 
 const formatNumber = (num) => {
@@ -105,7 +106,7 @@ const LinkClicksBarChart = ({ links }) => {
                     {chartData.map((_, index) => (
                         <Cell key={`cell-${index}`} fill="#4f46e5" />
                     ))}
-                    <label
+                    <LabelList
                         position="right"
                         content={({ x, y, width, value }) => (
                             <text x={x + width + 5} y={y + 10} fill="#1e293b" textAnchor="start" fontSize={11} fontWeight="600">

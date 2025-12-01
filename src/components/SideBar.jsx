@@ -12,7 +12,6 @@ import {
   Headset,
   Menu,
   ChevronLeft,
-
 } from 'lucide-react';
 import { useSession } from "next-auth/react";
 
@@ -24,8 +23,8 @@ const SidebarItem = ({ icon, text, active, expanded, onClick }) => (
       transition-colors group
       ${
         active
-          ? 'bg-gradient-to-tr from-indigo-200 to-indigo-100 text-indigo-800'
-          : 'hover:bg-indigo-50 text-gray-600'
+          ? 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white shadow-md'
+          : 'hover:bg-slate-100 text-slate-700'
       }
   `}
     onClick={onClick}
@@ -42,8 +41,8 @@ const SidebarItem = ({ icon, text, active, expanded, onClick }) => (
       <div
         className={`
         absolute left-full rounded-md px-2 py-1 ml-6
-        bg-indigo-100 text-indigo-800 text-sm
-        invisible opacity-20 -translate-x-3 transition-all
+        bg-slate-900 text-white text-sm shadow-lg
+        invisible opacity-0 -translate-x-3 transition-all
         group-hover:visible group-hover:opacity-100 group-hover:translate-x-0
     `}
       >
@@ -150,16 +149,37 @@ const SideBar = ({ activeContent, setActiveContent, isSidebarOpen, toggleSidebar
             })}
           </ul>
 
-          <div className="border-t flex p-3 flex-shrink-0">
-            <div
-              className={`justify-between items-center w-full transition-all ${expanded ? 'flex w-52 ml-3' : 'w-0 hidden'}
-            `}
+          <div className="border-t flex p-3 flex-shrink-0 justify-center">
+            <Link 
+              href="/profile" 
+              className="relative group flex items-center w-full transition-all hover:bg-gray-50 rounded-lg p-2 cursor-pointer"
+              onClick={() => handleItemClick()}
             >
-              <div className="leading-4">
-                <h4 className="font-semibold">{session?.user?.fullName || 'User Name'}</h4>
-                <span className="text-xs text-gray-600">{session?.user?.email || 'user@example.com'}</span>
+              <div className="flex items-center gap-3 w-full">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white font-semibold flex-shrink-0">
+                  {session?.user?.image ? (
+                    <img 
+                      src={session.user.image} 
+                      alt="Profile" 
+                      className="w-full h-full rounded-full object-cover"
+                    />
+                  ) : (
+                    session?.user?.fullName?.charAt(0).toUpperCase() || 'U'
+                  )}
+                </div>
+                {expanded && (
+                  <div className="leading-4 overflow-hidden">
+                    <h4 className="font-semibold text-sm truncate">{session?.user?.fullName || 'User Name'}</h4>
+                    <span className="text-xs text-gray-600 truncate block">{session?.user?.email || 'user@example.com'}</span>
+                  </div>
+                )}
               </div>
-            </div>
+              {!expanded && (
+                <div className="absolute left-full rounded-md px-2 py-1 ml-6 bg-slate-900 text-white text-sm shadow-lg invisible opacity-0 -translate-x-3 transition-all group-hover:visible group-hover:opacity-100 group-hover:translate-x-0 whitespace-nowrap">
+                  {session?.user?.fullName || 'Profile'}
+                </div>
+              )}
+            </Link>
           </div>
         </nav>
       </aside>

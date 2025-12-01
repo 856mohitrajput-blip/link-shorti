@@ -12,14 +12,23 @@ export async function PUT(request) {
             return NextResponse.json({ error: 'Invalid request data' }, { status: 400 });
         }
 
-        const withdrawalDoc = await Withdrawal.findOneAndUpdate(
-            { userEmail },
-            { $set: { withdrawalDetails: details } }, 
-            { new: true, runValidators: true, upsert: true }
-        );
+        // First check if document exists
+        let withdrawalDoc = await Withdrawal.findOne({ userEmail });
 
-        if (!withdrawalDoc) {
-            return NextResponse.json({ error: 'Withdrawal account not found/created for this user' }, { status: 404 });
+        if (withdrawalDoc) {
+            // Update only withdrawalDetails, preserve other fields
+            withdrawalDoc.withdrawalDetails = details;
+            await withdrawalDoc.save();
+        } else {
+            // Create new document if doesn't exist
+            withdrawalDoc = await Withdrawal.create({
+                userEmail,
+                withdrawalDetails: details,
+                availableBalance: 0,
+                pendingBalance: 0,
+                totalWithdrawn: 0,
+                history: []
+            });
         }
 
         return NextResponse.json({ 

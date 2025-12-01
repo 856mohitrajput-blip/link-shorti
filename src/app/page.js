@@ -10,13 +10,14 @@ export default function Home() {
 
   return (
     <div className="bg-gray-50 text-gray-800">
-      <section className="relative text-center py-16 sm:py-20 px-4 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-100 via-blue-100 to-purple-100 opacity-50"></div>
-        <div className="relative z-10">
-          <h1 className="text-4xl sm:text-5xl md:text-7xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600">
-            Shorten, Share, and Shine
+      <section className="relative text-center py-20 sm:py-24 px-4 bg-gradient-to-br from-cyan-50 via-blue-50 to-white">
+        <div className="relative z-10 max-w-5xl mx-auto">
+          <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold tracking-tight mb-6">
+            <span className="bg-gradient-to-r from-cyan-600 to-blue-600 bg-clip-text text-transparent">
+              Shorten, Share, and Shine
+            </span>
           </h1>
-          <p className="mx-auto mt-6 max-w-2xl text-lg md:text-xl text-gray-600">
+          <p className="mx-auto max-w-2xl text-lg md:text-xl text-gray-700 leading-relaxed">
             The ultimate link shortener for creators, marketers, and businesses. Create short links in seconds & earn money for every visit.
           </p>
           <div className="mt-10">

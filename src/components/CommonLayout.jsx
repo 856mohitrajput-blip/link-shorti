@@ -1,26 +1,20 @@
 "use client"
-import React, {useState, useEffect} from 'react';
+import React from 'react';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import { usePathname } from 'next/navigation'
 
 const CommonLayout = ({children}) => {
     const pathname = usePathname();
-    const [isCommonLayoutVisible, setIsCommonLayoutVisible] = useState(true);
-
-    useEffect(()=>{
-        if ((pathname === '/join-now') || (pathname === '/dashboard')) {
-          setIsCommonLayoutVisible(false)
-        } else {
-            setIsCommonLayoutVisible(true)
-        }
-      },[pathname])
+    
+    // Check if header/footer should be hidden (no flash)
+    const hideLayout = pathname === '/join-now' || pathname === '/dashboard' || pathname === '/admin/login' || pathname === '/forgot-password';
 
     return (
         <>
-            {isCommonLayoutVisible && <Header />}
+            {!hideLayout && <Header />}
                 {children}
-            {isCommonLayoutVisible && <Footer />}
+            {!hideLayout && <Footer />}
         </>
     );
 }

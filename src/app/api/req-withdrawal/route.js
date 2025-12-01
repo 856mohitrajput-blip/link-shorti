@@ -81,11 +81,20 @@ export async function POST(request) {
         withdrawalDoc.pendingBalance += withdrawalAmount;
         withdrawalDoc.history.unshift(newHistoryItem);
 
-        await withdrawalDoc.save();
+        // Mark the history array as modified to ensure Mongoose saves it
+        withdrawalDoc.markModified('history');
+        
+        const savedDoc = await withdrawalDoc.save();
+        
+        console.log('Withdrawal saved:', {
+            userEmail,
+            historyLength: savedDoc.history.length,
+            pendingBalance: savedDoc.pendingBalance
+        });
 
         return NextResponse.json({ 
             message: 'Withdrawal request submitted successfully.', 
-            updatedWithdrawal: withdrawalDoc 
+            updatedWithdrawal: savedDoc 
         }, { status: 201 });
 
     } catch (error) {

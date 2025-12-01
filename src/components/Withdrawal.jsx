@@ -443,7 +443,14 @@ const Withdrawal = ({ withdrawal: data, fetchData }) => {
                                     <td className="px-3 py-4 sm:px-6 whitespace-nowrap text-sm font-mono text-slate-500">#{item.withdrawalId}</td>
                                     <td className="px-3 py-4 sm:px-6 whitespace-nowrap text-sm text-slate-700">{new Date(item.date).toLocaleDateString()}</td>
                                     <td className="px-3 py-4 sm:px-6 whitespace-nowrap text-sm font-medium text-slate-600">{item.withdrawalMethod}</td>
-                                    <td className="px-3 py-4 sm:px-6 whitespace-nowrap"><StatusBadge status={item.status} /></td>
+                                    <td className="px-3 py-4 sm:px-6 whitespace-nowrap">
+                                        <StatusBadge status={item.status} />
+                                        {item.adminNote && (
+                                            <p className="text-xs text-slate-500 mt-1 max-w-[150px] truncate" title={item.adminNote}>
+                                                Note: {item.adminNote}
+                                            </p>
+                                        )}
+                                    </td>
                                     <td className="px-3 py-4 sm:px-6 whitespace-nowrap font-bold text-slate-800 text-right">{formatCurrency(item.totalAmount)}</td>
                                 </tr>
                             )) : (

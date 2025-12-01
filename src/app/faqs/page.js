@@ -7,28 +7,25 @@ const FaqItem = ({ question, answer }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="relative group">
-      <div className="absolute -inset-0.5 bg-gradient-to-r from-pink-300 via-purple-300 to-indigo-300 rounded-2xl blur opacity-50 group-hover:opacity-100 transition duration-700"></div>
-      <div className="relative bg-white rounded-2xl p-6 sm:p-8 md:p-10">
-        <button
-          className="flex w-full items-center justify-between text-left text-lg font-medium text-gray-800 cursor-pointer"
-          onClick={() => setIsOpen(!isOpen)}
-        >
-          <span className="text-xl sm:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-pink-400 to-purple-400">{question}</span>
-          {isOpen ? (
-            <Minus className="h-6 w-6 text-purple-500" />
-          ) : (
-            <Plus className="h-6 w-6 text-gray-400" />
-          )}
-        </button>
-        <div
-          className={`grid overflow-hidden transition-all duration-500 ease-in-out ${
-            isOpen ? 'grid-rows-[1fr] opacity-100 mt-4' : 'grid-rows-[0fr] opacity-0'
-          }`}
-        >
-          <div className="overflow-hidden">
-            <p className="text-gray-700 leading-relaxed text-base sm:text-lg">{answer}</p>
-          </div>
+    <div className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow">
+      <button
+        className="flex w-full items-center justify-between text-left p-6 cursor-pointer"
+        onClick={() => setIsOpen(!isOpen)}
+      >
+        <span className="text-lg font-semibold text-gray-900 pr-4">{question}</span>
+        {isOpen ? (
+          <Minus className="h-5 w-5 text-cyan-600 flex-shrink-0" />
+        ) : (
+          <Plus className="h-5 w-5 text-gray-400 flex-shrink-0" />
+        )}
+      </button>
+      <div
+        className={`grid overflow-hidden transition-all duration-300 ease-in-out ${
+          isOpen ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'
+        }`}
+      >
+        <div className="overflow-hidden">
+          <p className="text-gray-600 leading-relaxed px-6 pb-6">{answer}</p>
         </div>
       </div>
     </div>
@@ -81,16 +78,16 @@ export default function FaqPage() {
   ];
 
   return (
-      <div className="mx-auto px-4 py-12 sm:py-16">
+      <div className="mx-auto px-4 py-12 sm:py-16 bg-gray-50">
         <div className="text-center mb-12 md:mb-16">
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold leading-tight tracking-tight mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-pink-500 via-purple-400 to-indigo-500 drop-shadow-md">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight mb-4 sm:mb-6 bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600">
             Frequently Asked Questions
           </h1>
           <p className="text-base sm:text-lg text-gray-600 max-w-3xl mx-auto">
             Find answers to the most common questions about LinkShorti.
           </p>
         </div>
-        <div className="max-w-6xl mx-auto space-y-6 sm:space-y-8">
+        <div className="max-w-4xl mx-auto space-y-4">
           {faqs.map((faq, index) => (
             <FaqItem key={index} question={faq.question} answer={faq.answer} />
           ))}

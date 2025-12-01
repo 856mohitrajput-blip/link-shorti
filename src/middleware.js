@@ -11,10 +11,13 @@ export default auth((req) => {
     return NextResponse.redirect(new URL('/dashboard', nextUrl));
   }
 
-  // Redirect non-logged-in users to join-now page
-  if (!isLoggedIn && pathname === '/dashboard') {
+  // Redirect non-logged-in users to join-now page for protected routes
+  if (!isLoggedIn && (pathname === '/dashboard' || pathname === '/profile')) {
     return NextResponse.redirect(new URL('/join-now', nextUrl));
   }
+
+  // Admin routes are handled by their own authentication system
+  // No middleware protection needed for /admin routes
 
   return NextResponse.next();
 });
@@ -23,5 +26,6 @@ export const config = {
   matcher: [
     '/join-now',
     '/dashboard',
+    '/profile',
   ],
 }

@@ -34,6 +34,28 @@ const userSchema = new mongoose.Schema({
     type: Date,
     default: null
   },
+  tempPassword: {
+    type: String,
+    default: null
+  },
+  isAdmin: {
+    type: Boolean,
+    default: false
+  },
+  isBlocked: {
+    type: Boolean,
+    default: false
+  },
+  blockedAt: {
+    type: Date,
+    default: null
+  },
+  blockedReason: {
+    type: String,
+    default: null
+  }
+}, {
+  timestamps: true
 });
 
 const UserModel = mongoose.models?.User || mongoose.model('User', userSchema);

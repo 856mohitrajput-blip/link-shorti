@@ -68,25 +68,27 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800">
-      <div className="relative text-center py-16 sm:py-24 px-4 bg-gradient-to-r from-cyan-100 via-blue-100 to-purple-100">
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-cyan-500 to-blue-600">
-          Get in Touch
-        </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-base sm:text-lg md:text-xl text-gray-600">
-          We are here for you. How can we help?
-        </p>
+      <div className="relative text-center py-16 sm:py-20 px-4 bg-white border-b border-gray-200">
+        <div className="max-w-4xl mx-auto">
+          <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-900 mb-4">
+            Get in Touch
+          </h1>
+          <p className="mx-auto max-w-2xl text-lg text-gray-600">
+            We are here for you. How can we help?
+          </p>
+        </div>
       </div>
 
       <section className="py-12 sm:py-16 px-4 sm:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-stretch">
-            <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 flex flex-col">
-              <h2 className="text-3xl font-bold tracking-tighter text-gray-900">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-stretch">
+            <div className="bg-white p-6 sm:p-8 rounded-lg border border-gray-200 shadow-sm">
+              <h2 className="text-2xl font-bold text-gray-900 mb-6">
                 Send a Message
               </h2>
-              <form onSubmit={handleSubmit} className="mt-8 grid grid-cols-1 gap-6 flex-grow">
+              <form onSubmit={handleSubmit} className="space-y-5">
                 <div>
-                  <label htmlFor="fullName" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="fullName" className="block text-sm font-medium text-gray-700 mb-1.5">
                     Full Name
                   </label>
                   <input
@@ -97,11 +99,11 @@ export default function ContactPage() {
                     value={formData.fullName}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none sm:text-sm p-3"
+                    className="block w-full rounded-lg border border-gray-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500 focus:outline-none text-sm p-2.5"
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1.5">
                     Email
                   </label>
                   <input
@@ -112,11 +114,11 @@ export default function ContactPage() {
                     value={formData.email}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none sm:text-sm p-3"
+                    className="block w-full rounded-lg border border-gray-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500 focus:outline-none text-sm p-2.5"
                   />
                 </div>
                 <div>
-                  <label htmlFor="message" className="block text-sm font-medium text-gray-700">
+                  <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1.5">
                     Message
                   </label>
                   <textarea
@@ -126,76 +128,109 @@ export default function ContactPage() {
                     value={formData.message}
                     onChange={handleChange}
                     required
-                    className="mt-1 block w-full rounded-md border border-gray-300 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 focus:outline-none sm:text-sm p-3"
+                    className="block w-full rounded-lg border border-gray-300 focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500 focus:outline-none text-sm p-2.5"
                   ></textarea>
                 </div>
-                <div>
-                  <button
-                    type="submit"
-                    disabled={status === 'sending'}
-                    className="w-full flex items-center justify-center py-3 px-4 border border-transparent rounded-md text-sm font-medium text-white bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 disabled:opacity-50"
-                  >
-                    <Send className="h-5 w-5 mr-2" />
-                    {status === 'sending' ? 'Sending...' : 'Send Message'}
-                  </button>
-                </div>
+                <button
+                  type="submit"
+                  disabled={status === 'sending'}
+                  className="w-full flex items-center justify-center py-2.5 px-4 rounded-lg font-medium text-white bg-cyan-600 hover:bg-cyan-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-cyan-500 disabled:opacity-50 transition-colors"
+                >
+                  <Send className="h-5 w-5 mr-2" />
+                  {status === 'sending' ? 'Sending...' : 'Send Message'}
+                </button>
                 {status === 'success' && (
                   <p className="text-green-600 text-sm">Your message has been sent successfully. We will contact you back soon.</p>
                 )}
                 {status === 'error' && (
-                  <p className="text-red-600">Something went wrong. Please try again.</p>
+                  <p className="text-red-600 text-sm">Something went wrong. Please try again.</p>
                 )}
               </form>
+              
+              <div className="mt-6 pt-6 border-t border-gray-200">
+                <div className="space-y-3 text-sm text-gray-600">
+                  <p className="flex items-start">
+                    <span className="text-cyan-600 mr-2">•</span>
+                    <span>We typically respond within 24 hours during business days</span>
+                  </p>
+                  <p className="flex items-start">
+                    <span className="text-cyan-600 mr-2">•</span>
+                    <span>For urgent matters, please call us directly</span>
+                  </p>
+                  <p className="flex items-start">
+                    <span className="text-cyan-600 mr-2">•</span>
+                    <span>All inquiries are handled with strict confidentiality</span>
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="space-y-8 flex flex-col">
-              <div className="bg-white p-6 sm:p-8 rounded-2xl border border-gray-200 flex-grow flex flex-col">
-                <h3 className="text-2xl font-bold text-gray-900">Our Office</h3>
-                <p className="mt-2 text-gray-600">
+            <div className="space-y-6">
+              <div className="bg-white p-6 sm:p-8 rounded-lg border border-gray-200 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Our Office</h3>
+                <p className="text-gray-600 text-sm mb-4">
                   International Tech Park, Bangalore, India
                 </p>
-                <div className="mt-4 flex-grow min-h-[300px] bg-gray-200 rounded-lg overflow-hidden">
+                <div className="h-[250px] bg-gray-200 rounded-lg overflow-hidden">
                   <Map />
                 </div>
               </div>
-            </div>
-          </div>
-          <div className="mt-12 sm:mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 bg-white p-6 sm:p-8 rounded-2xl border border-gray-200">
-            <div className="">
-              <h3 className="text-2xl font-bold text-gray-900">Contact Information</h3>
-              <div className="mt-4 space-y-4">
-                <div className="flex items-center">
-                  <Mail className="h-6 w-6 text-cyan-500" />
-                  <a
-                    href="mailto:hello@linkshorti.com"
-                    className="ml-3 text-gray-600 hover:text-gray-900"
-                  >
-                    hello@linkshorti.com
-                  </a>
-                </div>
-                <div className="flex items-center">
-                  <Phone className="h-6 w-6 text-cyan-500" />
-                  <a
-                    href="tel:+1234567890"
-                    className="ml-3 text-gray-600 hover:text-gray-900"
-                  >
-                    +1 (234) 567-890
-                  </a>
+
+              <div className="bg-white p-6 sm:p-8 rounded-lg border border-gray-200 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Contact Information</h3>
+                <div className="space-y-3">
+                  <div className="flex items-center">
+                    <Mail className="h-5 w-5 text-cyan-600" />
+                    <a
+                      href="mailto:support@linkshorti.com"
+                      className="ml-3 text-sm text-gray-600 hover:text-gray-900"
+                    >
+                      support@linkshorti.com
+                    </a>
+                  </div>
+                  <div className="flex items-center">
+                    <Phone className="h-5 w-5 text-cyan-600" />
+                    <a
+                      href="tel:+918059238403"
+                      className="ml-3 text-sm text-gray-600 hover:text-gray-900"
+                    >
+                      +91 80592 38403
+                    </a>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="">
-              <h3 className="text-2xl font-bold text-gray-900">Send DMs</h3>
-              <div className="mt-4 flex space-x-6">
-                <a href="#" className="text-gray-400 hover:text-gray-500">
-                  <Twitter className="h-9 w-9" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-gray-500">
-                  <Linkedin className="h-9 w-9" />
-                </a>
-                <a href="#" className="text-gray-400 hover:text-gray-500">
-                  <Instagram className="h-9 w-9" />
-                </a>
+
+              <div className="bg-white p-6 sm:p-8 rounded-lg border border-gray-200 shadow-sm">
+                <h3 className="text-xl font-bold text-gray-900 mb-4">Follow Us</h3>
+                <div className="flex space-x-4">
+                  <a 
+                    href="https://twitter.com/linkshorti" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-cyan-500 transition-colors"
+                    aria-label="Twitter"
+                  >
+                    <Twitter className="h-6 w-6" />
+                  </a>
+                  <a 
+                    href="https://linkedin.com/company/linkshorti" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-blue-600 transition-colors"
+                    aria-label="LinkedIn"
+                  >
+                    <Linkedin className="h-6 w-6" />
+                  </a>
+                  <a 
+                    href="https://instagram.com/linkshorti" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-pink-600 transition-colors"
+                    aria-label="Instagram"
+                  >
+                    <Instagram className="h-6 w-6" />
+                  </a>
+                </div>
               </div>
             </div>
           </div>

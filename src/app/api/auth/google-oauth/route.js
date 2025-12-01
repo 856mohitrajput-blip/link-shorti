@@ -4,9 +4,23 @@ import User from '@/models/Users';
 import Statistics from '@/models/Statistics';
 import Withdrawal from '@/models/Withdrawal';
 
+/**
+ * Google OAuth Handler
+ * 
+ * This endpoint is called by NextAuth during Google sign-in
+ * It creates or updates user accounts and associated records
+ */
 export async function POST(request) {
   try {
     const { email, name, image, googleId } = await request.json();
+
+    // Validate required fields
+    if (!email || !name || !googleId) {
+      return NextResponse.json(
+        { success: false, message: "Missing required fields" },
+        { status: 400 }
+      );
+    }
 
     await connectDB();
 
@@ -14,13 +28,21 @@ export async function POST(request) {
     let user = await User.findOne({ email });
 
     if (user) {
-      // User exists, update Google ID if not set
+      // Check if user is blocked
+      if (user.isBlocked) {
+        return NextResponse.json(
+          { success: false, message: "Your account has been blocked. Please contact support." },
+          { status: 403 }
+        );
+      }
+
+      // Existing user - update Google info if needed
       if (!user.googleId) {
         user.googleId = googleId;
         user.profileImage = image;
         await user.save();
       }
-      
+
       return NextResponse.json({
         success: true,
         user: {
@@ -31,43 +53,62 @@ export async function POST(request) {
           profileImage: user.profileImage
         }
       });
-    } else {
-      // Create new user for Google OAuth
-      const newUser = new User({
-        fullName: name,
-        email,
-        googleId,
-        profileImage: image,
-        isEmailVerified: true, // Google accounts are pre-verified
-        password: null // No password for OAuth users
-      });
-
-      await newUser.save();
-
-      // Create associated records
-      const newStatistics = new Statistics({
-        userEmail: email,
-      });
-      await newStatistics.save();
-
-      const newWithdrawal = new Withdrawal({
-        userEmail: email,
-      });
-      await newWithdrawal.save();
-
-      return NextResponse.json({
-        success: true,
-        user: {
-          _id: newUser._id.toString(),
-          fullName: newUser.fullName,
-          email: newUser.email,
-          isEmailVerified: newUser.isEmailVerified,
-          profileImage: newUser.profileImage
-        }
-      });
     }
+
+    // New user - create account
+    const newUser = new User({
+      fullName: name,
+      email,
+      googleId,
+      profileImage: image,
+      isEmailVerified: true, // Google accounts are pre-verified
+      password: null // No password for OAuth users
+    });
+
+    await newUser.save();
+
+    // Create associated records (Statistics and Withdrawal)
+    try {
+      await Promise.all([
+        Statistics.findOneAndUpdate(
+          { userEmail: email },
+          { userEmail: email },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        ),
+        Withdrawal.findOneAndUpdate(
+          { userEmail: email },
+          { userEmail: email },
+          { upsert: true, new: true, setDefaultsOnInsert: true }
+        )
+      ]);
+    } catch (recordError) {
+      // Rollback user creation if associated records fail
+      await User.findByIdAndDelete(newUser._id);
+      throw recordError;
+    }
+
+    return NextResponse.json({
+      success: true,
+      user: {
+        _id: newUser._id.toString(),
+        fullName: newUser.fullName,
+        email: newUser.email,
+        isEmailVerified: newUser.isEmailVerified,
+        profileImage: newUser.profileImage
+      }
+    });
+
   } catch (error) {
-    console.error('Google OAuth API error:', error);
+    console.error('Google OAuth error:', error);
+
+    // Handle duplicate key errors
+    if (error.code === 11000) {
+      return NextResponse.json(
+        { success: false, message: "Account already exists" },
+        { status: 409 }
+      );
+    }
+
     return NextResponse.json(
       { success: false, message: "Internal server error" },
       { status: 500 }

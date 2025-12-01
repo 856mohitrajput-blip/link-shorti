@@ -11,57 +11,70 @@ export default function JoinUsPage() {
   const [isLogin, setIsLogin] = useState(true);
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-100">
-      <div className="relative w-full lg:max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden lg:h-[580px] min-h-[640px] sm:min-h-[600px] lg:min-h-0 flex flex-col">
-
-        <div className="w-full py-4 text-center bg-gray-800 text-white flex items-center justify-center gap-3">
-          <Image
-            src="/logo.jpg"
-            alt="LinkShorti Logo"
-            width={40}
-            height={40}
-            className="rounded-lg"
-          />
-          <span className="text-3xl font-extrabold">LinkShorti</span>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-gray-50">
+      <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-lg flex flex-col lg:flex-row">
+        {/* Left Panel - Welcome Message */}
+        <div className={`hidden lg:flex lg:w-5/12 p-10 bg-slate-900 text-white flex-col justify-center ${!isLogin ? 'order-2' : 'order-1'}`}>
+          <div className="space-y-6">
+            <div className="flex items-center gap-3 mb-8">
+              <Image
+                src="/logo.jpg"
+                alt="LinkShorti"
+                width={40}
+                height={40}
+                className="rounded-lg"
+              />
+              <span className="text-2xl font-bold">LinkShorti</span>
+            </div>
+            
+            <h2 className="text-3xl font-bold">
+              {isLogin ? 'New here?' : 'Welcome back!'}
+            </h2>
+            <p className="text-slate-300 text-sm leading-relaxed">
+              {isLogin
+                ? 'Create an account to start shortening and managing your links'
+                : 'Sign in to access your dashboard and manage your links'}
+            </p>
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="inline-block font-medium py-2.5 px-6 rounded-lg border border-white/30 hover:bg-white hover:text-slate-900 transition-colors"
+            >
+              {isLogin ? 'Sign Up' : 'Sign In'}
+            </button>
+          </div>
         </div>
 
-        <div className="flex-1 lg:flex lg:flex-row h-full overflow-hidden">
-          {/* Left Panel - Welcome Message */}
-          <div className={`hidden lg:flex w-1/2 p-8 lg:p-12 text-white bg-gradient-to-br from-cyan-500 to-blue-600 flex-col justify-center items-center h-full ${!isLogin ? 'order-2' : 'order-1'}`}>
-            <div className="text-center">
-              <h2 className="text-3xl lg:text-4xl font-extrabold mb-4">
-                {isLogin ? 'Hello, Friend!' : 'Welcome Back!'}
-              </h2>
-              <p className="mb-8 text-sm lg:text-base">
-                {isLogin
-                  ? 'Enter your personal details and start your journey with us'
-                  : 'To keep connected with us please login with your personal info'}
-              </p>
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="font-bold py-3 px-8 rounded-full border-2 border-white hover:bg-white hover:text-cyan-500 transition-all duration-300 cursor-pointer text-sm lg:text-base"
-              >
-                {isLogin ? 'Sign Up' : 'Login'}
-              </button>
+        {/* Right Panel - Form */}
+        <div className={`w-full lg:w-7/12 flex flex-col ${!isLogin ? 'order-1' : 'order-2'} max-h-[90vh] overflow-y-auto`}>
+          {/* Mobile Header */}
+          <div className="lg:hidden flex items-center justify-center gap-3 py-6 border-b">
+            <Image
+              src="/logo.jpg"
+              alt="LinkShorti"
+              width={36}
+              height={36}
+              className="rounded-lg"
+            />
+            <span className="text-xl font-bold text-gray-900">LinkShorti</span>
+          </div>
+
+          <div className="flex-1 flex items-center justify-center p-8">
+            <div className="w-full max-w-sm">
+              {isLogin ? <LoginForm /> : <SignUpForm />}
             </div>
           </div>
 
-          {/* Right Panel - Form */}
-          <div className={`w-full lg:w-1/2 flex flex-col items-center justify-center bg-white h-full ${!isLogin ? 'order-1' : 'order-2'}`}>
-            <div className="flex-1 flex items-center justify-center w-full overflow-y-auto">
-              <div className="w-full max-w-sm px-8 py-4">
-                {isLogin ? <LoginForm /> : <SignUpForm />}
-              </div>
-            </div>
-
-            <div className="w-full px-8 flex justify-center lg:hidden flex-shrink-0 pt-6 pb-4">
-              <button
-                onClick={() => setIsLogin(!isLogin)}
-                className="w-full max-w-sm font-bold py-3 px-8 rounded-full border-2 border-cyan-500 text-cyan-500 hover:bg-cyan-500 hover:text-white transition-all duration-300 cursor-pointer text-sm"
-              >
-                {isLogin ? 'Need an Account? Sign Up' : 'Already have an Account? Login'}
-              </button>
-            </div>
+          {/* Mobile Toggle */}
+          <div className="lg:hidden border-t p-6 text-center">
+            <button
+              onClick={() => setIsLogin(!isLogin)}
+              className="text-sm text-gray-600 hover:text-gray-900"
+            >
+              {isLogin ? "Don't have an account? " : 'Already have an account? '}
+              <span className="font-semibold text-cyan-600 hover:text-cyan-700">
+                {isLogin ? 'Sign Up' : 'Sign In'}
+              </span>
+            </button>
           </div>
         </div>
       </div>
@@ -90,7 +103,8 @@ function LoginForm() {
       });
 
       if (res.data.success) {
-        router.push("/dashboard");
+        // Force a hard navigation to refresh the session
+        window.location.href = "/dashboard";
       } else {
         throw new Error(res.data.message || "Invalid email or password.");
       }
@@ -104,60 +118,81 @@ function LoginForm() {
   };
 
   return (
-    <div className="text-center w-full">
-      <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-3">Login</h2>
-      <div className="flex justify-center mb-4">
-        <div className="w-16 h-1 bg-cyan-500"></div>
+    <div className="w-full">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">Sign In</h2>
+        <p className="text-gray-600 text-sm">Enter your credentials to continue</p>
       </div>
+      
       <form className="space-y-4" onSubmit={handleSubmit}>
-        {error && <p className="text-red-500">{error}</p>}
-        <div className="relative">
-          <Mail className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input
-            type="email"
-            placeholder="Email"
-            required={true}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm lg:text-base"
-          />
-        </div>
-        <div className="relative">
-          <Lock className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input
-            type={showPassword ? 'text' : 'password'}
-            placeholder="Password"
-            required={true}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full pl-12 pr-12 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm lg:text-base"
-          />
-          <div
-            className="absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff className="text-gray-400 h-5 w-5" /> : <Eye className="text-gray-400 h-5 w-5" />}
+        {error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+            {error}
+          </div>
+        )}
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+          <div className="relative">
+            <Mail className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type="email"
+              placeholder="you@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900"
+            />
           </div>
         </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+          <div className="relative">
+            <Lock className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Enter your password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+
+        <div className="text-left">
+          <a href="/forgot-password" className="text-sm text-cyan-600 hover:text-cyan-700 underline">
+            Forgot password?
+          </a>
+        </div>
+        
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transform transition-transform hover:scale-105 cursor-pointer disabled:opacity-50 text-sm lg:text-base"
+          className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Logging in...' : <><span>Login</span><ArrowRight className="ml-2 h-5 w-5" /></>}
+          {loading ? 'Signing in...' : 'Sign In'}
         </button>
       </form>
 
-      <div className="mt-4">
+      <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
+            <div className="w-full border-t border-gray-200" />
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          <div className="relative flex justify-center text-xs">
+            <span className="px-2 bg-white text-gray-500">Or</span>
           </div>
         </div>
-        <div className="mt-3">
+        <div className="mt-4">
           <GoogleSignInButton text="Sign in with Google" />
         </div>
       </div>
@@ -226,7 +261,8 @@ function SignUpForm() {
         });
 
         if (loginRes.data.success) {
-          router.push("/dashboard");
+          // Force a hard navigation to refresh the session
+          window.location.href = "/dashboard";
         } else {
           throw new Error("Login failed after verification");
         }
@@ -268,22 +304,32 @@ function SignUpForm() {
 
   if (step === 2) {
     return (
-      <div className="text-center w-full max-w-sm">
-        <h2 className="text-3xl font-bold text-gray-800 mb-4">Verify Email</h2>
-        <div className="flex justify-center mb-6">
-          <div className="w-16 h-1 bg-cyan-500"></div>
+      <div className="w-full">
+        <div className="mb-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-1">Verify Email</h2>
+          <p className="text-sm text-gray-600">
+            Enter the 6-digit code sent to <strong>{email}</strong>
+          </p>
         </div>
-        <p className="text-sm text-gray-600 mb-6">
-          We&apos;ve sent a 6-digit code to <strong>{email}</strong>
-        </p>
-        <form className="space-y-6" onSubmit={handleVerifyOTP}>
-          {error && <p className="text-red-500 text-sm">{error}</p>}
-          {success && <p className="text-green-500 text-sm">{success}</p>}
-          <div className="relative">
+        
+        <form className="space-y-4" onSubmit={handleVerifyOTP}>
+          {error && (
+            <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+              {error}
+            </div>
+          )}
+          {success && (
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-600">
+              {success}
+            </div>
+          )}
+          
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1.5">Verification Code</label>
             <input
               type="text"
-              placeholder="Enter 6-digit code"
-              required={true}
+              placeholder="000000"
+              required
               value={otp}
               onChange={(e) => {
                 const value = e.target.value;
@@ -293,103 +339,132 @@ function SignUpForm() {
                 }
               }}
               maxLength="6"
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-center text-lg font-mono tracking-widest"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-center text-xl font-mono tracking-widest text-gray-900"
             />
           </div>
+          
           <button
             type="submit"
             disabled={loading || otp.length !== 6}
-            className="w-full flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transform transition-transform hover:scale-105 cursor-pointer disabled:opacity-50 text-sm lg:text-base"
+            className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {loading ? 'Verifying...' : <><span>Verify & Complete Signup</span><ArrowRight className="ml-2 h-5 w-5" /></>}
+            {loading ? 'Verifying...' : 'Verify & Continue'}
           </button>
-          <button
-            type="button"
-            onClick={resendOTP}
-            disabled={loading}
-            className="w-full text-cyan-600 hover:text-cyan-800 text-sm font-medium disabled:opacity-50"
-          >
-            Didn&apos;t receive code? Resend
-          </button>
-          <button
-            type="button"
-            onClick={() => setStep(1)}
-            className="w-full text-gray-500 hover:text-gray-700 text-sm"
-          >
-            ← Back to signup
-          </button>
+          
+          <div className="space-y-2 pt-2 text-center">
+            <button
+              type="button"
+              onClick={resendOTP}
+              disabled={loading}
+              className="text-cyan-600 hover:text-cyan-700 text-sm disabled:opacity-50 underline"
+            >
+              Resend code
+            </button>
+            <div>
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="text-gray-500 hover:text-gray-700 text-sm"
+              >
+                ← Back
+              </button>
+            </div>
+          </div>
         </form>
       </div>
     );
   }
 
   return (
-    <div className="text-center w-full">
-      <h2 className="text-2xl lg:text-3xl font-bold text-gray-800 mb-3">Create Account</h2>
-      <div className="flex justify-center mb-4">
-        <div className="w-16 h-1 bg-cyan-500"></div>
+    <div className="w-full">
+      <div className="mb-8">
+        <h2 className="text-2xl font-bold text-gray-900 mb-1">Create Account</h2>
+        <p className="text-gray-600 text-sm">Get started with LinkShorti</p>
       </div>
+      
       <form className="space-y-4" onSubmit={handleSignup}>
-        {error && <p className="text-red-500 text-sm">{error}</p>}
-        {success && <p className="text-green-500 text-sm">{success}</p>}
-        <div className="relative">
-          <User className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input
-            type="text"
-            placeholder="Name"
-            required={true}
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm lg:text-base"
-          />
-        </div>
-        <div className="relative">
-          <Mail className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input
-            type="email"
-            placeholder="Email"
-            required={true}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full pl-12 pr-4 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm lg:text-base"
-          />
-        </div>
-        <div className="relative">
-          <Lock className="absolute top-1/2 left-4 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
-          <input
-            type={showPassword ? 'text' : 'password'}
-            required={true}
-            placeholder="Password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            className="w-full pl-12 pr-12 py-3 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm lg:text-base"
-          />
-          <div
-            className="absolute top-1/2 right-4 transform -translate-y-1/2 cursor-pointer"
-            onClick={() => setShowPassword(!showPassword)}
-          >
-            {showPassword ? <EyeOff className="text-gray-400 h-5 w-5" /> : <Eye className="text-gray-400 h-5 w-5" />}
+        {error && (
+          <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600">
+            {error}
+          </div>
+        )}
+        {success && (
+          <div className="p-3 bg-green-50 border border-green-200 rounded-lg text-sm text-green-600">
+            {success}
+          </div>
+        )}
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Name</label>
+          <div className="relative">
+            <User className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type="text"
+              placeholder="John Doe"
+              required
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900"
+            />
           </div>
         </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Email</label>
+          <div className="relative">
+            <Mail className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type="email"
+              placeholder="you@example.com"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full pl-10 pr-4 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900"
+            />
+          </div>
+        </div>
+        
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1.5">Password</label>
+          <div className="relative">
+            <Lock className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400 h-5 w-5" />
+            <input
+              type={showPassword ? 'text' : 'password'}
+              placeholder="Create a password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full pl-10 pr-10 py-2.5 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-gray-900"
+            />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            >
+              {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+            </button>
+          </div>
+        </div>
+        
         <button
           type="submit"
           disabled={loading}
-          className="w-full flex items-center justify-center bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-semibold py-3 px-8 rounded-lg shadow-md hover:shadow-lg transform transition-transform hover:scale-105 cursor-pointer disabled:opacity-50 text-sm lg:text-base"
+          className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-2.5 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {loading ? 'Creating account...' : <><span>Create Account</span><ArrowRight className="ml-2 h-5 w-5" /></>}
+          {loading ? 'Creating account...' : 'Create Account'}
         </button>
       </form>
 
-      <div className="mt-4">
+      <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-300" />
+            <div className="w-full border-t border-gray-200" />
           </div>
-          <div className="relative flex justify-center text-sm">
-            <span className="px-2 bg-white text-gray-500">Or continue with</span>
+          <div className="relative flex justify-center text-xs">
+            <span className="px-2 bg-white text-gray-500">Or</span>
           </div>
         </div>
-        <div className="mt-3">
+        <div className="mt-4">
           <GoogleSignInButton text="Sign up with Google" />
         </div>
       </div>

@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import Image from "next/image";
-import { getSession, useSession } from "next-auth/react";
+import { getSession, useSession, signOut } from "next-auth/react";
 
 const NavLink = ({ href, children, onClick, isMobile }) => {
   const pathname = usePathname();
@@ -31,6 +31,7 @@ export default function Header() {
   const { data: session } = useSession();
   const pathname = usePathname();
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isSigningOut, setIsSigningOut] = useState(false);
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
@@ -49,26 +50,45 @@ export default function Header() {
     { href: "/faqs", label: "FAQs" },
   ];
 
+  const handleSignOut = () => {
+    setIsSigningOut(true);
+    signOut({ callbackUrl: '/join-now' });
+  };
+
   const AuthButtons = ({ isMobile }) => (
     <div
       className={
-        isMobile ? "mt-8 grid gap-4" : "hidden md:flex items-center gap-4"
+        isMobile ? "mt-8 grid gap-4" : "hidden md:flex items-center gap-3"
       }
     >
       {isLoggedIn ? (
-        <Link
-          href="/dashboard"
-          className={`w-full text-center whitespace-nowrap rounded-full bg-cyan-500 px-5 py-2 font-bold text-black transition-colors hover:bg-cyan-400 ${
-            isMobile ? "text-lg py-3" : "text-sm"
-          }`}
-          onClick={isMobile ? toggleMenu : undefined}
-        >
-          Dashboard
-        </Link>
+        <>
+          <Link
+            href="/dashboard"
+            className={`text-center whitespace-nowrap rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-5 py-2 font-bold text-white transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/30 hover:scale-105 ${
+              isMobile ? "text-lg py-3 w-full" : "text-sm"
+            }`}
+            onClick={isMobile ? toggleMenu : undefined}
+          >
+            Dashboard
+          </Link>
+          <button
+            onClick={() => {
+              if (isMobile) toggleMenu();
+              handleSignOut();
+            }}
+            disabled={isSigningOut}
+            className={`text-center whitespace-nowrap rounded-full bg-gradient-to-r from-red-500 to-rose-500 px-5 py-2 font-bold text-white transition-all duration-300 hover:shadow-lg hover:shadow-red-500/30 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed ${
+              isMobile ? "text-lg py-3 w-full" : "text-sm"
+            }`}
+          >
+            {isSigningOut ? 'Signing Out...' : 'Sign Out'}
+          </button>
+        </>
       ) : (
         <Link
           href="/join-now"
-          className={`w-full text-center whitespace-nowrap rounded-full bg-cyan-500 px-5 py-2 font-bold text-black transition-all duration-300 hover:bg-cyan-400 shadow-lg shadow-cyan-500/20 ${
+          className={`w-full text-center whitespace-nowrap rounded-full bg-gradient-to-r from-cyan-500 to-blue-500 px-5 py-2 font-bold text-white transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/30 hover:scale-105 ${
             isMobile ? "text-lg py-3" : "text-sm"
           }`}
           onClick={isMobile ? toggleMenu : undefined}
@@ -139,7 +159,7 @@ export default function Header() {
   };
   
   return (
-    <header className="sticky top-0 z-50 w-full bg-black/80 backdrop-blur-lg border-b border-gray-800">
+    <header className="sticky top-0 z-50 w-full bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 backdrop-blur-lg border-b border-slate-700/50 shadow-lg">
       {renderHeaderContent()}
     </header>
   );

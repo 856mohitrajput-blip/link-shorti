@@ -30,7 +30,9 @@ export default function AdminLoginPage() {
         router.push('/admin');
       }
     } catch (error) {
-      const errorMessage = error?.response?.data?.message || 'Invalid credentials';
+      // Extract error message from API response
+      const errorMessage = error?.response?.data?.message || 
+                          (error?.response?.status === 500 ? 'Internal server error. Please try again later.' : 'Invalid credentials');
       setError(errorMessage);
     } finally {
       setLoading(false);

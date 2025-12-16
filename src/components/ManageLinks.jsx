@@ -2,7 +2,7 @@
 import React, { useState, useMemo, useEffect} from 'react';
 import { useSession } from 'next-auth/react';
 import { 
-    Link as LinkIcon, Sparkles, Wand2, Search, Copy, Check, Trash2, ExternalLink,
+    Link as LinkIcon, Wand2, Search, Copy, Check, Trash2, ExternalLink,
 } from 'lucide-react';
 
 const SHORTENER_DOMAIN = process.env.NEXT_PUBLIC_SHORTENER_DOMAIN || 'https://yourdomain.com';
@@ -31,7 +31,6 @@ const LinkCard = ({ link, onCopy, onDelete, isDeleting }) => {
         <div className="bg-white p-4 rounded-xl shadow-sm transition-shadow hover:shadow-md border border-slate-200/80">
             <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4">
                 <div className="flex-grow min-w-0">
-                    {link.alias && <p className="text-sm font-semibold text-purple-600">Alias: {link.alias}</p>}
                     <p className="text-sm text-slate-500 truncate">{link.originalUrl}</p>
                     <a href={fullShortUrl} target="_blank" rel="noopener noreferrer" className="text-lg font-bold text-blue-600 hover:underline flex items-center gap-1">
                         {fullShortUrl.replace(/^https?:\/\//, '')}
@@ -60,7 +59,6 @@ const LinkCard = ({ link, onCopy, onDelete, isDeleting }) => {
 const ManageLinks = ({ links: fetchedLinksArray, fetchData }) => {
     const { data: session } = useSession();
     const [longUrl, setLongUrl] = useState('');
-    const [alias, setAlias] = useState('');
     const [message, setMessage] = useState('');
     const [isError, setIsError] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -85,14 +83,6 @@ const ManageLinks = ({ links: fetchedLinksArray, fetchData }) => {
             setMessage('Please enter a valid URL.');
             return;
         }
-        const cleanedAlias = alias ? alias.trim().replace(/[^a-zA-Z0-9-]/g, '').toLowerCase() : '';
-        if (cleanedAlias.length === 0) {
-            setIsError(true);
-            setMessage('A custom alias is required.');
-            return;
-        }
-        
-        const aliasToSend = cleanedAlias; 
 
         setIsSubmitting(true);
         setIsError(false);
@@ -101,13 +91,12 @@ const ManageLinks = ({ links: fetchedLinksArray, fetchData }) => {
             const response = await fetch('/api/create-link', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ originalUrl: longUrl, alias: aliasToSend, userEmail: session.user.email }),
+                body: JSON.stringify({ originalUrl: longUrl, userEmail: session.user.email }),
             });
             const data = await response.json();
             if (!response.ok) throw new Error(data.error || 'Failed to create link.');
             setLinks([data.newLink, ...links]);
             setLongUrl('');
-            setAlias('');
             setMessage(`Link created!`);
         } catch (error) {
             setIsError(true);
@@ -149,8 +138,7 @@ const ManageLinks = ({ links: fetchedLinksArray, fetchData }) => {
             const search = searchTerm.toLowerCase();
             return (
                 link.originalUrl?.toLowerCase().includes(search) ||
-                link.shortUrl?.toLowerCase().includes(search) ||
-                link.alias?.toLowerCase().includes(search)
+                link.shortUrl?.toLowerCase().includes(search)
             );
         });
     }, [links, searchTerm]);
@@ -161,15 +149,9 @@ const ManageLinks = ({ links: fetchedLinksArray, fetchData }) => {
 
             <div className='bg-white p-6 rounded-2xl shadow-md mb-8'>
                 <form onSubmit={handleShorten}>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="relative">
-                            <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                            <input required type="text" value={longUrl} onChange={(e) => setLongUrl(e.target.value)} placeholder="Enter long URL" className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500" disabled={isSubmitting} />
-                        </div>
-                        <div className="relative">
-                            <Sparkles className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-                            <input type="text" value={alias} onChange={(e) => setAlias(e.target.value)} placeholder="Alias (custom name)" required className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500" disabled={isSubmitting} />
-                        </div>
+                    <div className="relative">
+                        <LinkIcon className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                        <input required type="text" value={longUrl} onChange={(e) => setLongUrl(e.target.value)} placeholder="Enter long URL" className="w-full pl-10 pr-4 py-3 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500" disabled={isSubmitting} />
                     </div>
                     <div className="mt-4 flex flex-col sm:flex-row items-center gap-4">
                         <button type="submit" className="w-full sm:w-auto flex items-center justify-center gap-2 px-6 py-3 font-semibold text-white bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg hover:opacity-90 disabled:opacity-50" disabled={isSubmitting}>

@@ -29,7 +29,7 @@ export async function POST(request) {
 
     if (!admin) {
       return NextResponse.json(
-        { success: false, message: "Invalid credentials" },
+        { success: false, message: "Entered phone number is wrong" },
         { status: 401 }
       );
     }
@@ -62,7 +62,7 @@ export async function POST(request) {
 
       await admin.save();
       return NextResponse.json(
-        { success: false, message: "Invalid credentials" },
+        { success: false, message: "Entered password is wrong" },
         { status: 401 }
       );
     }
@@ -87,8 +87,10 @@ export async function POST(request) {
     );
   } catch (error) {
     console.error('Admin login error:', error);
+    // Only show internal server error for unexpected errors
+    // Validation and authentication errors are already handled above
     return NextResponse.json(
-      { success: false, message: "Internal server error" },
+      { success: false, message: "Internal server error. Please try again later." },
       { status: 500 }
     );
   }

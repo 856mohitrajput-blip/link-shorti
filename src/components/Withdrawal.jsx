@@ -285,16 +285,23 @@ const Withdrawal = ({ withdrawal: data, fetchData }) => {
 
     const isDetailsComplete = useMemo(() => {
         const method = paymentDetails.selectedMethod;
-        const details = paymentDetails[method.toLowerCase().replace(' ', '')]; 
+        let detailsKey = method.toLowerCase().replace(' ', '');
+        if (method === 'Bank Transfer') {
+            detailsKey = 'bank';
+        }
+        const details = paymentDetails[detailsKey]; 
         if (!details) return false;
 
         switch (method) {
             case 'PayPal':
-                return !!details.email && details.email.includes('@');
+                return !!details.email && details.email.trim() !== '' && details.email.includes('@');
             case 'UPI':
-                return !!details.id;
+                return !!details.id && details.id.trim() !== '';
             case 'Bank Transfer':
-                return !!details.bankName && !!details.accountNumber && !!details.ifscCode && !!details.accountHolderName;
+                return !!details.bankName && details.bankName.trim() !== '' &&
+                       !!details.accountNumber && details.accountNumber.trim() !== '' &&
+                       !!details.ifscCode && details.ifscCode.trim() !== '' &&
+                       !!details.accountHolderName && details.accountHolderName.trim() !== '';
             default:
                 return false;
         }

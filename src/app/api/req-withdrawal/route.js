@@ -29,7 +29,11 @@ export async function POST(request) {
             return NextResponse.json({ error: 'No withdrawal method selected' }, { status: 400 });
         }
 
-        const detailsData = details[method.toLowerCase().replace(' ', '')];
+        let detailsKey = method.toLowerCase().replace(' ', '');
+        if (method === 'Bank Transfer') {
+            detailsKey = 'bank';
+        }
+        const detailsData = details[detailsKey];
         if (!detailsData) {
              return NextResponse.json({ error: `Details for ${method} not saved` }, { status: 400 });
         }

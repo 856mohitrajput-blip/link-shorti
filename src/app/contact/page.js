@@ -194,7 +194,7 @@ export default function ContactPage() {
                       href="tel:+918059238403"
                       className="ml-3 text-sm text-gray-600 hover:text-gray-900"
                     >
-                      +91 80592 38403
+                      (coming soon)
                     </a>
                   </div>
                 </div>

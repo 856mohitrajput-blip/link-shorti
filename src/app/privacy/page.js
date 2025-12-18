@@ -20,7 +20,7 @@ export default function PrivacyPolicyPage() {
                 Contact Information
               </h2>
               <p className="text-gray-700 leading-relaxed">
-                If you require any more information or have any questions about our privacy policy, please feel free to contact us by email at <a href="mailto:admin@linkshorti.com" className="text-pink-500 hover:underline">admin@linkshorti.com</a>.
+                We do not host or store any files on our servers. This service functions solely as a link shortener platform, and is not responsible for any external content you may access. For copyright or removal requests, contact: <a href="mailto:support@linkshorti.com" className="text-pink-500 hover:underline">support@linkshorti.com</a>.
               </p>
             </div>
           </div>

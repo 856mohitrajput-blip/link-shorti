@@ -17,6 +17,8 @@ const linksSchema = new mongoose.Schema({
     alias: {
         type: String,
         required: false,
+        unique: true,
+        sparse: true,
     },
     clicks: {
         type: Number,

@@ -60,7 +60,7 @@ const withdrawalSchema = new mongoose.Schema({
     userEmail: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, // ✅ LEGITIMATE: One withdrawal document per user
     },
     availableBalance: {
         type: Number,
@@ -92,6 +92,11 @@ const withdrawalSchema = new mongoose.Schema({
     },
     history: [withdrawalHistorySchema],
 }, { timestamps: true });
+
+// Note: Do NOT create a unique index on history.withdrawalId
+// withdrawalId should be unique within a document's history array, but NOT across all documents
+// Multiple withdrawal documents can have history items with the same withdrawalId
+// If a unique index exists in MongoDB, it must be dropped manually using scripts/fix-withdrawal-index.js
 
 const Withdrawal = mongoose.models.Withdrawal || mongoose.model('Withdrawal', withdrawalSchema);
 

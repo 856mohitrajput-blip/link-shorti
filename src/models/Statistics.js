@@ -4,7 +4,7 @@ const statisticsSchema = new mongoose.Schema({
     userEmail: {
         type: String,
         required: true,
-        unique: true,
+        unique: true, // ✅ LEGITIMATE: One statistics record per user
     },
     totalImpressions: {
         type: Number,

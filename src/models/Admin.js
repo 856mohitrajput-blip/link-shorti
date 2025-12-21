@@ -4,7 +4,7 @@ const adminSchema = new mongoose.Schema({
   phoneNumber: {
     type: String,
     required: true,
-    unique: true,
+    unique: true, // ✅ LEGITIMATE: Each phone number must be globally unique
     trim: true,
   },
   password: {

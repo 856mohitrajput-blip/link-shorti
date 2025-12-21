@@ -27,26 +27,56 @@ export async function POST(request) {
         const shortUrlKey = await generateUniqueShortKey(7);
         const safeOriginalUrl = originalUrl.startsWith('http') ? originalUrl : `https://${originalUrl}`;
 
-        const newLink = await Links.create({
-            userEmail,
-            originalUrl: safeOriginalUrl,
-            shortUrl: shortUrlKey, 
-            clicks: 0,
-            createdAt: new Date(),
-        });
+        try {
+            const newLink = await Links.create({
+                userEmail,
+                originalUrl: safeOriginalUrl,
+                shortUrl: shortUrlKey, 
+                clicks: 0,
+                createdAt: new Date(),
+            });
 
-        return NextResponse.json({ 
-            message: 'Link successfully created', 
-            newLink 
-        }, { status: 201 });
+            return NextResponse.json({ 
+                message: 'Link successfully created', 
+                newLink 
+            }, { status: 201 });
+        } catch (createError) {
+            // Handle unique index violations
+            if (createError.code === 11000) {
+                const key = Object.keys(createError.keyPattern)[0];
+                if (key === 'shortUrl') {
+                    // Retry once if shortUrl collision occurs (race condition)
+                    try {
+                        const retryShortUrlKey = await generateUniqueShortKey(7);
+                        const retryLink = await Links.create({
+                            userEmail,
+                            originalUrl: safeOriginalUrl,
+                            shortUrl: retryShortUrlKey,
+                            clicks: 0,
+                            createdAt: new Date(),
+                        });
+                        return NextResponse.json({ 
+                            message: 'Link successfully created', 
+                            newLink: retryLink 
+                        }, { status: 201 });
+                    } catch (retryError) {
+                        console.error('Retry failed:', retryError);
+                        return NextResponse.json({ error: 'A rare clash occurred in short URL generation. Please try again.' }, { status: 500 });
+                    }
+                } else if (key === 'alias') {
+                    return NextResponse.json({ error: 'This alias is already taken. Please choose a different one.' }, { status: 409 });
+                }
+            }
+            throw createError; // Re-throw if not a unique index error
+        }
 
     } catch (error) {
         console.error('Error creating link:', error);
         if (error.code === 11000) {
-             const key = Object.keys(error.keyPattern)[0];
-             if (key === 'shortUrl') {
-                 return NextResponse.json({ error: 'A rare clash occurred in short URL generation. Please try again.' }, { status: 500 });
-             }
+            const key = Object.keys(error.keyPattern)[0];
+            if (key === 'alias') {
+                return NextResponse.json({ error: 'This alias is already taken. Please choose a different one.' }, { status: 409 });
+            }
         }
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 });
     }

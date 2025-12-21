@@ -12,24 +12,24 @@ export async function PUT(request) {
             return NextResponse.json({ error: 'Invalid request data' }, { status: 400 });
         }
 
-        // First check if document exists
-        let withdrawalDoc = await Withdrawal.findOne({ userEmail });
-
-        if (withdrawalDoc) {
-            // Update only withdrawalDetails, preserve other fields
-            withdrawalDoc.withdrawalDetails = details;
-            await withdrawalDoc.save();
-        } else {
-            // Create new document if doesn't exist
-            withdrawalDoc = await Withdrawal.create({
-                userEmail,
-                withdrawalDetails: details,
-                availableBalance: 0,
-                pendingBalance: 0,
-                totalWithdrawn: 0,
-                history: []
-            });
-        }
+        // Use findOneAndUpdate with upsert to avoid race conditions with unique index
+        const withdrawalDoc = await Withdrawal.findOneAndUpdate(
+            { userEmail },
+            { 
+                $set: { withdrawalDetails: details },
+                $setOnInsert: {
+                    availableBalance: 0,
+                    pendingBalance: 0,
+                    totalWithdrawn: 0,
+                    history: []
+                }
+            },
+            { 
+                upsert: true, 
+                new: true,
+                setDefaultsOnInsert: true
+            }
+        );
 
         return NextResponse.json({ 
             message: 'Withdrawal details updated successfully.', 
